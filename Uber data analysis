@@ -1,0 +1,103 @@
+import pandas as pd
+import numpy as np
+import datetime
+import matplotlib
+import matplotlib.pyplot as plt
+import seaborn as sns
+import calendar
+
+data = pd.read_csv("c:/Users/Dell/Desktop/Uber Drives.csv")
+data.head()
+
+
+sns.heatmap(data.isnull(),yticklabels=False,cmap="tab20")
+plt.show()
+data=data.dropna()
+sns.heatmap(data.isnull(),yticklabels=False,cmap="viridis")
+plt.show()
+data.head()
+
+data['START_DATE*'] = pd.to_datetime(data['START_DATE*'], format="%m/%d/%Y %H:%M")
+data['END_DATE*'] = pd.to_datetime(data['END_DATE*'], format="%m/%d/%Y %H:%M")
+hour=[]
+day=[]
+dayofweek=[]
+month=[]
+weekday=[]
+for x in data['START_DATE*']:
+    hour.append(x.hour)
+    day.append(x.day)
+    dayofweek.append(x.dayofweek)
+    month.append(x.month)
+    weekday.append(calendar.day_name[dayofweek[-1]])
+data['HOUR']=hour
+data['DAY']=day
+data['DAY_OF_WEEK']=dayofweek
+data['MONTH']=month
+data['WEEKDAY']=weekday
+data.head()
+
+
+plt.title('Count Vs Category')
+data['CATEGORY*'].value_counts()
+sns.countplot(x='CATEGORY*',data=data)
+plt.show()
+
+plt.title('Count Vs purpose')
+data['PURPOSE*'].value_counts()
+sns.countplot(y='PURPOSE*',data=data)
+plt.show()
+
+plt.title('Miles travelled by people')
+data['MILES*'].plot.hist()
+plt.xlabel('Miles')
+plt.ylabel('Frequency')
+plt.show()
+
+
+hours = data['START_DATE*'].dt.hour.value_counts()
+hours.plot(kind='bar',color='red',figsize=(10,5))
+plt.xlabel('Hours')
+plt.ylabel('Frequency')
+plt.title('Number of trips Vs hours')
+plt.show()
+
+days = data['WEEKDAY'].value_counts()
+days.plot(kind='barh', color='seagreen', figsize=(10,5))
+plt.xlabel('Frequency')
+plt.ylabel('Days')
+plt.title('Number of trips Vs days in a week')
+plt.show()
+
+
+plt.title('Number of trip Vs Days of December')
+data['DAY'][data['MONTH']==12].value_counts().plot(kind='bar',figsize=(20,5),color='green')
+plt.xlabel('Days of December')
+plt.ylabel('Frequency')
+plt.show()
+
+plt.title('Number of trip Vs Month')
+data['MONTH'].value_counts().plot(kind='bar',figsize=(10,5),color='black')
+plt.show()
+
+plt.title('Count Vs Starting point')
+data['START*'].value_counts().plot(kind='bar',figsize=(25,10),color='blue')
+plt.show()
+
+months = data['START*'].value_counts().nlargest (10)
+months.plot(kind='barh', color='lightblue', figsize=(10,5))
+plt.xlabel('Frequency')
+plt.ylabel('Pickup point')
+plt.title('Pickup point Vs Frequency')
+plt.show()
+
+months = data['STOP*'].value_counts().nlargest (10)
+months.plot(kind='barh', color='lightgreen', figsize=(10,5))
+plt.xlabel('Frequency')
+plt.ylabel('End point')
+plt.title('End point Vs Frequency')
+plt.show()
+
+purpose = data.groupby('PURPOSE*').mean()
+purpose.plot(kind = 'barh',figsize=(15,5))
+plt.show()
